@@ -6,6 +6,7 @@ import io.cucumber.java.en.When;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import pages.LandingPage;
+import helpers.StringHelper;
 
 import io.cucumber.java.BeforeAll;
 import io.cucumber.java.en.Given;
@@ -43,23 +44,38 @@ public class CreateAccountSteps extends CucumberSteps {
         WebElement passwordElement = driver.findElement(By.cssSelector(LandingPage.Locators.createAccountConfirmEmail));
         WebElement confirmPasswordElement = driver.findElement(By.cssSelector(LandingPage.Locators.createAccountPassword));
         WebElement createAccountSubmitButton = driver.findElement(By.cssSelector(LandingPage.Locators.createAccountSubmitButton));
+        WebElement termsOfUseCheckbox = driver.findElement(By.cssSelector(LandingPage.Locators.termsOfUseCheckbox));
         Assert.assertTrue(emailElement.isEnabled());
         Assert.assertTrue(passwordElement.isEnabled());
         Assert.assertTrue(confirmPasswordElement.isEnabled());
         Assert.assertTrue(createAccountSubmitButton.isEnabled());
+        Assert.assertTrue(termsOfUseCheckbox.isEnabled());
+        Assert.assertFalse(termsOfUseCheckbox.isSelected());
     }
 
     @When("I submit the form to create a new account")
     public void iSubmitTheFormToCreateANewAccount() {
         WebElement emailElement = driver.findElement(By.cssSelector(LandingPage.Locators.createAccountEmail));
-        WebElement passwordElement = driver.findElement(By.cssSelector(LandingPage.Locators.createAccountConfirmEmail));
-        WebElement confirmPasswordElement = driver.findElement(By.cssSelector(LandingPage.Locators.createAccountPassword));
+        WebElement confirmEmailElement = driver.findElement(By.cssSelector(LandingPage.Locators.createAccountConfirmEmail));
+        WebElement passwordElement = driver.findElement(By.cssSelector(LandingPage.Locators.createAccountPassword));
         WebElement createAccountSubmitButton = driver.findElement(By.cssSelector(LandingPage.Locators.createAccountSubmitButton));
-        emailElement.sendKeys("");
+        WebElement termsOfUseCheckbox = driver.findElement(By.cssSelector(LandingPage.Locators.termsOfUseCheckbox));
+
+        // generates a one-time email address like testaccount+202401010930@gmail.com which will go to testaccount@gmail.com
+        String testUserEmail = baseEmailAddressText + "+" + StringHelper.dateTimeString() + baseEmailDomain;
+
+        emailElement.sendKeys(testUserEmail);
+        confirmEmailElement.sendKeys(testUserEmail);
+        passwordElement.sendKeys(testPassword);
+        Assert.assertFalse(termsOfUseCheckbox.isSelected());
+        termsOfUseCheckbox.click();
+        Assert.assertTrue(termsOfUseCheckbox.isSelected());
+
+        createAccountSubmitButton.click();
     }
 
     @AfterAll
     public static void afterAll() {
-        driver.close();
+        //driver.close();
     }
 }

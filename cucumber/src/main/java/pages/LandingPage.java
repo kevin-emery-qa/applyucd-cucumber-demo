@@ -7,5 +7,6 @@ public class LandingPage {
         public static String createAccountConfirmEmail = "#verifyEmail";
         public static String createAccountPassword = "#signUpPassword";
         public static String createAccountSubmitButton = "#signUpButton";
+        public static String termsOfUseCheckbox = "#termsOfUse";
     }
 }
