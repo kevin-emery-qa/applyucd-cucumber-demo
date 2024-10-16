@@ -6,30 +6,31 @@ import io.cucumber.java.en.When;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import pages.LandingPage;
+import pages.TermLevelPage;
 import helpers.StringHelper;
+import helpers.ElementHelper;
 
 import io.cucumber.java.BeforeAll;
 import io.cucumber.java.en.Given;
 import org.junit.Assert;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
 
-public class CreateAccountSteps extends CucumberSteps {
-    static WebDriver driver;
+import java.util.Objects;
+
+import static org.junit.Assert.assertTrue;
+
+public class CreateAccountSteps extends InitHelper {
     @BeforeAll
     public static void beforeAll() {
+        initializeDriver();
         initializeProperties();
-        ChromeOptions options = new ChromeOptions();
-        driver = new ChromeDriver(options);
         driver.navigate().to(appBaseUrl);
     }
 
     @Given("The login page has loaded and I see the button to apply")
     public void iSeeTheButtonToApply() {
         WebElement createAccountElement = driver.findElement(By.cssSelector(LandingPage.Locators.createAccountButton));
-        Assert.assertTrue(createAccountElement.isEnabled());
-        Assert.assertTrue(createAccountElement.isDisplayed());
+        assertTrue(createAccountElement.isEnabled());
+        assertTrue(createAccountElement.isDisplayed());
     }
 
     @When("I click the button to create an account")
@@ -45,11 +46,11 @@ public class CreateAccountSteps extends CucumberSteps {
         WebElement confirmPasswordElement = driver.findElement(By.cssSelector(LandingPage.Locators.createAccountPassword));
         WebElement createAccountSubmitButton = driver.findElement(By.cssSelector(LandingPage.Locators.createAccountSubmitButton));
         WebElement termsOfUseCheckbox = driver.findElement(By.cssSelector(LandingPage.Locators.termsOfUseCheckbox));
-        Assert.assertTrue(emailElement.isEnabled());
-        Assert.assertTrue(passwordElement.isEnabled());
-        Assert.assertTrue(confirmPasswordElement.isEnabled());
-        Assert.assertTrue(createAccountSubmitButton.isEnabled());
-        Assert.assertTrue(termsOfUseCheckbox.isEnabled());
+        assertTrue(emailElement.isEnabled());
+        assertTrue(passwordElement.isEnabled());
+        assertTrue(confirmPasswordElement.isEnabled());
+        assertTrue(createAccountSubmitButton.isEnabled());
+        assertTrue(termsOfUseCheckbox.isEnabled());
         Assert.assertFalse(termsOfUseCheckbox.isSelected());
     }
 
@@ -59,7 +60,7 @@ public class CreateAccountSteps extends CucumberSteps {
         WebElement confirmEmailElement = driver.findElement(By.cssSelector(LandingPage.Locators.createAccountConfirmEmail));
         WebElement passwordElement = driver.findElement(By.cssSelector(LandingPage.Locators.createAccountPassword));
         WebElement createAccountSubmitButton = driver.findElement(By.cssSelector(LandingPage.Locators.createAccountSubmitButton));
-        WebElement termsOfUseCheckbox = driver.findElement(By.cssSelector(LandingPage.Locators.termsOfUseCheckbox));
+        WebElement termsOfUseCheckbox = ElementHelper.waitForElement(LandingPage.Locators.termsOfUseCheckbox);
 
         // generates a one-time email address like testaccount+202401010930@gmail.com which will go to testaccount@gmail.com
         String testUserEmail = baseEmailAddressText + "+" + StringHelper.dateTimeString() + baseEmailDomain;
@@ -68,14 +69,27 @@ public class CreateAccountSteps extends CucumberSteps {
         confirmEmailElement.sendKeys(testUserEmail);
         passwordElement.sendKeys(testPassword);
         Assert.assertFalse(termsOfUseCheckbox.isSelected());
+
         termsOfUseCheckbox.click();
-        Assert.assertTrue(termsOfUseCheckbox.isSelected());
+        assertTrue(termsOfUseCheckbox.isSelected());
 
         createAccountSubmitButton.click();
     }
 
+    @Then("I am on the term level selection page")
+    public void iAmOnTheTermLevelSelectionPage() {
+        WebElement termSelectionPageElement = ElementHelper.waitForXpath(TermLevelPage.Locators.termSelectionPageLabel, 5);
+        assertTrue(termSelectionPageElement.isDisplayed());
+        assertTrue(Objects.requireNonNull(driver.getCurrentUrl()).contains("/my-application/term-level"));
+    }
+
+    @When("I select the latest Fall semester")
+    public void iSelectTheLatestFallSemester() {
+
+    }
+
     @AfterAll
     public static void afterAll() {
-        //driver.close();
+        driver.close();
     }
 }
