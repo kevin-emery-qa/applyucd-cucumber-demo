@@ -1,9 +1,11 @@
 package features;
 
+import io.cucumber.core.gherkin.Step;
 import io.cucumber.java.AfterAll;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchSessionException;
 import org.openqa.selenium.WebElement;
 import pages.LandingPage;
 import pages.TermLevelPage;
@@ -83,13 +85,19 @@ public class CreateAccountSteps extends InitHelper {
         assertTrue(Objects.requireNonNull(driver.getCurrentUrl()).contains("/my-application/term-level"));
     }
 
-    @When("I select the latest Fall semester")
-    public void iSelectTheLatestFallSemester() {
-
+    @Given("I am applying with a new account and I have reached the term selection page")
+    public void iAmApplyingWithANewAccountAndIHaveReachedTheTermSelectionPage() {
+        iSeeTheButtonToApply();
+        iClickTheButtonToCreateAnAccount();
+        iSeeTheFormToCreateANewAccount();
+        iSubmitTheFormToCreateANewAccount();
+        iAmOnTheTermLevelSelectionPage();
     }
 
     @AfterAll
     public static void afterAll() {
-        driver.close();
+        try {
+            driver.close();
+        } catch (NoSuchSessionException ignored) { }
     }
 }
